@@ -47,7 +47,7 @@ public class LandMark {
         for (int i = 0; i < newCoordinates.size(); i++) {
             CloudPoint newPoint = newCoordinates.get(i);
             if (i < Coordinates.size()) {
-                CloudPoint existingPoint = Coordinates.getLast();
+                CloudPoint existingPoint = Coordinates.get(i);
                 double avgX = (existingPoint.getX() + newPoint.getX()) / 2;
                 double avgY = (existingPoint.getY() + newPoint.getY()) / 2;
                 existingPoint.setX(avgX);

@@ -53,8 +53,9 @@ public class FusionSlam {
             coordinates.add(globalX);
             coordinates.add(globalY);
             globalPoints.add(new CloudPoint(coordinates));
-            LandMark landmark = new LandMark(trackedObject.getId(), trackedObject.getDescription(), globalPoints);
-            Landmarks.add(landmark);
+        }
+        if (!globalPoints.isEmpty()) {
+            Landmarks.add(new LandMark(trackedObject.getId(), trackedObject.getDescription(), globalPoints));
         }
         return Landmarks;
     }

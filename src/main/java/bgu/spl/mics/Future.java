@@ -33,12 +33,16 @@ public class Future<T> {
      *
      */
     public synchronized T get() {
+        boolean interrupted = false;
         while (!isDone) {
             try {
                 wait();
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                interrupted = true;
             }
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
         return result;
     }
@@ -57,7 +61,7 @@ public class Future<T> {
     /**
      * @return true if this object has been resolved, false otherwise
      */
-    public boolean isDone() {
+    public synchronized boolean isDone() {
         return isDone;
 
     }
@@ -73,13 +77,16 @@ public class Future<T> {
      * {@code timeout} TimeUnits {@code unit}. If time has elapsed, return null.
      */
     public synchronized T get(long timeout, TimeUnit unit) {
-        if (!isDone) {
+        long remaining = unit.toNanos(timeout);
+        long started = System.nanoTime();
+        while (!isDone && remaining > 0) {
             try {
-                long timeoutMillis = unit.toMillis(timeout);
-                wait(timeoutMillis);
+                TimeUnit.NANOSECONDS.timedWait(this, remaining);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                return null;
             }
+            remaining = unit.toNanos(timeout) - (System.nanoTime() - started);
         }
         return result;
     }
