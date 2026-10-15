@@ -3,6 +3,7 @@ package bgu.spl.mics.application;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +29,23 @@ import bgu.spl.mics.application.services.TimeService;
 public class GurionRockRunner {
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        if (args.length != 1) {
+            throw new IllegalArgumentException("Usage: GurionRockRunner <configuration.json>");
+        }
         StatisticalFolder statisticalFolder = StatisticalFolder.getInstance();
 
         String configFilePath = args[0];
-        String outputFilePath = "out.json";
         Gson gson = new GsonBuilder().setPrettyPrinting().create(); // Enable pretty printing
         try (Reader reader = new FileReader(configFilePath)) {
             InputFile inputFile = gson.fromJson(reader, InputFile.class);
-            reader.close();
+            if (inputFile == null || inputFile.getCameras() == null || inputFile.getLidarWorkers() == null
+                    || inputFile.getTickTime() <= 0 || inputFile.getDuration() <= 0) {
+                throw new IllegalArgumentException("Configuration requires Cameras, LiDarWorkers, positive TickTime and Duration.");
+            }
+            Path configDirectory = Path.of(configFilePath).toAbsolutePath().getParent();
+            inputFile.getCameras().setCameraDatasPath(configDirectory.resolve(inputFile.getCameras().getCameraDatasPath()).toString());
+            inputFile.getLidarWorkers().setLidarsDataPath(configDirectory.resolve(inputFile.getLidarWorkers().getLidarsDataPath()).toString());
+            inputFile.setPoseJsonFile(configDirectory.resolve(inputFile.getPoseJsonFile()).toString());
             // Create Cameras
             List<Camera> cameras = new ArrayList<>();
             for (CameraConfiguration config : inputFile.getCameras().getCamerasConfigurations()) {

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class MessageBusImplTest {
@@ -44,6 +45,12 @@ class MessageBusImplTest {
 
         // @Post: The number of registered microservices should be 0
         assertEquals(0, messageBus.getNumMicroS());
+    }
+
+    @AfterEach
+    void removeTestSubscriptions() {
+        messageBus.unregister(microService1);
+        messageBus.unregister(microService2);
     }
 
     @Test

@@ -1,0 +1,22 @@
+{
+  "camera1": [
+    {
+      "time": 1,
+      "detectedObjects": [
+        {
+          "id": "wall",
+          "description": "Synthetic demo wall"
+        }
+      ]
+    },
+    {
+      "time": 2,
+      "detectedObjects": [
+        {
+          "id": "wall",
+          "description": "Synthetic demo wall"
+        }
+      ]
+    }
+  ]
+}
