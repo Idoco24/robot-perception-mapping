@@ -52,7 +52,7 @@ class RunnerIntegrationTest {
 
     @Test
     void suppliedSensorFailureScenarioProducesDiagnosticReportAndStops() throws Exception {
-        run("configuration_file.json");
+        run("examples/sensor-failure/configuration_file.json");
         JsonObject output = new Gson().fromJson(Files.readString(workDirectory.resolve("error_output.json")), JsonObject.class);
         assertEquals("camera1", output.get("faultySensor").getAsString());
         assertTrue(output.has("statistics"));

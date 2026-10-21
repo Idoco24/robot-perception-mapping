@@ -6,9 +6,7 @@ A multithreaded Java simulation of a robot perception pipeline. Camera detection
 are matched with LiDAR point clouds, transformed using GPS/IMU poses and fused into
 a landmark map. Sensor workers communicate through an in-process message bus.
 
-Built as a System Programming Languages coursework project at Ben-Gurion
-University. This is an educational simulation using JSON sensor recordings;
-it does not connect to robot hardware or implement a full probabilistic SLAM stack.
+The simulation uses JSON sensor recordings and runs locally without robot hardware.
 
 ## What it demonstrates
 
@@ -97,13 +95,13 @@ with two cloud points. It finishes after several one-second ticks and writes
 This excerpt omits runtime and object counters. Scheduling can affect timing and
 message ordering; it is not intended as a bit-for-bit output fixture.
 
-## Run the recovered sensor-failure scenario
+## Run the sensor-failure demo
 
 ```sh
-mvn compile exec:java "-Dexec.args=configuration_file.json"
+mvn compile exec:java "-Dexec.args=examples/sensor-failure/configuration_file.json"
 ```
 
-The original input includes a deliberate `ERROR` detection from `camera1`.
+The sensor-failure input includes a deliberate `ERROR` detection from `camera1`.
 The system stops and writes **`error_output.json`**, containing the faulty sensor,
 recent camera/LiDAR frames, poses and statistics. An error report is the expected
 result for this dataset; it is not the normal demo. A handled sensor failure can
@@ -130,7 +128,7 @@ configuration file, so the data can travel together as a folder.
 | LiDAR data | Timestamped object IDs and arrays of `[x, y]` points |
 | Pose data | Array of `time`, `x`, `y` and `yaw` records; yaw is in degrees |
 
-The root input files are the recovered assignment dataset. `examples/normal/`
+`examples/sensor-failure/` contains the diagnostic scenario. `examples/normal/`
 contains the small synthetic success case. Expected schemas can be read directly
 from those JSON files; not all malformed inputs have explicit validation yet.
 
@@ -144,31 +142,16 @@ src/main/java/bgu/spl/mics/
   application/objects/         Sensor, pose and landmark models
   application/services/        Camera, LiDAR, pose, fusion and clock services
   application/GurionRockRunner.java
-  example/                     Recovered framework examples
 src/test/java/bgu/spl/mics/     Unit and process-level integration tests
 examples/normal/               Small synthetic demo inputs
+examples/sensor-failure/       Sensor-failure diagnostic inputs
 docs/VALIDATION.md             Verification evidence and remaining limitations
-PROVENANCE.md                  Recovery and attribution notes
 .github/workflows/ci.yml       JDK 21 build and tests
 ```
 
-## Recovery, contributions and limitations
+## Limitations
 
-The first commit is an honest import of a recovered academic snapshot; subsequent
-commits record actual build, correctness, test and documentation work. The
-original development dates were not fabricated. See [PROVENANCE.md](PROVENANCE.md)
-for starter-code and teammate attribution boundaries.
-
-The preparation work fixed short/zero future timeouts, landmark duplication for
-multi-point observations and incorrect averaging of corresponding cloud points.
-It also made Java requirements explicit, made input paths portable, added a normal
-demo and expanded verification beyond the original eight tests.
-
-The code still has educational-project constraints, including singleton state,
-unchecked generic casts, partial invalid-input handling and timing-sensitive
-service startup/pose ordering. Passing the included tests does not establish
-deterministic behaviour under every workload. See [validation notes](docs/VALIDATION.md).
-
-This repository remains private while original authorship, teammate attribution
-and course publication conditions are reviewed. No open-source license has been
-added because permission to license all recovered material has not been established.
+Service startup and pose ordering can depend on thread scheduling. Components use
+singleton state; start a fresh JVM for each run. Input validation is partial, and
+passing tests does not establish deterministic behavior under every workload.
+See [validation notes](docs/VALIDATION.md) for coverage and remaining limits.

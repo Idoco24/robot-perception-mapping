@@ -3,7 +3,7 @@
 # Variables
 MVN = mvn
 MAIN_CLASS = bgu.spl.mics.application.GurionRockRunner
-CONFIG_FILE ?= ./configuration_file.json
+CONFIG_FILE ?= ./examples/sensor-failure/configuration_file.json
 
 
 # Default target
